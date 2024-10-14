@@ -1,14 +1,14 @@
-from sqlalchemy import Column, Integer, String, Boolean
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import create_engine
+from motor import motor_asyncio
+from pydantic import BaseModel
 
-Base = declarative_base()
+client = motor_asyncio.AsyncIOMotorClient("mongodb://localhost:27017/")
+db = client["tasks"]
+tasks_collection = db["tasks"]
 
-class Task(Base):
-    __tablename__ = 'tasks'
-    id = Column(Integer, primary_key=True)
-    title = Column(String)
-    is_completed = Column(Boolean, default=False)
+class TaskSchema(BaseModel):
+    title: str
+    is_completed: bool = False
 
-engine = create_engine('sqlite:///tasks.db')
-Base.metadata.create_all(engine)
+class TaskUpdateSchema(BaseModel):
+    title: str = None
+    is_completed: bool = None
